@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Estoque - Reserva Tablets{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Estoque de Tablets</h1>
+    <div class="subtitle">Configure o total de tablets disponíveis na instituição</div>
+  </div>
+</div>
+
+<div class="cards">
+  <div class="card accent">
+    <div class="label">Total cadastrado</div>
+    <div class="value">{{ estoque.total_tablets }}</div>
+  </div>
+  <div class="card success">
+    <div class="label">Disponíveis</div>
+    <div class="value">{{ disponiveis }}</div>
+  </div>
+  <div class="card warning">
+    <div class="label">Em uso (retirados)</div>
+    <div class="value">{{ em_uso }}</div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Atualizar total de tablets</h2>
+  <form method="POST">
+    <div class="form-group" style="max-width:240px;">
+      <label>Total de tablets no estoque</label>
+      <input type="number" name="total_tablets" min="0" value="{{ estoque.total_tablets }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar</button>
+  </form>
+</div>
+{% endblock %}

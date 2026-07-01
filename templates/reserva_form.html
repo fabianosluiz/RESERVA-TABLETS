@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Nova Reserva - Reserva Tablets{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Nova Reserva</h1>
+    <div class="subtitle">{{ disponiveis }} tablet(s) disponíveis no momento</div>
+  </div>
+</div>
+
+<div class="panel">
+  <form method="POST">
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nome do solicitante</label>
+        <input type="text" name="nome" value="{{ form.nome or current_user.nome }}" required>
+      </div>
+      <div class="form-group">
+        <label>Turma</label>
+        <input type="text" name="turma" value="{{ form.turma or '' }}" placeholder="Ex: MT77">
+      </div>
+      <div class="form-group">
+        <label>Data</label>
+        <input type="date" name="data" value="{{ form.data or '' }}" required>
+      </div>
+      <div class="form-group">
+        <label>Horário de retirada</label>
+        <input type="time" name="horario_retirada" value="{{ form.horario_retirada or '' }}">
+      </div>
+      <div class="form-group">
+        <label>Horário de devolução</label>
+        <input type="time" name="horario_devolucao" value="{{ form.horario_devolucao or '' }}">
+      </div>
+      <div class="form-group">
+        <label>Quantidade de tablets</label>
+        <input type="number" name="quantidade_solicitada" min="1" max="{{ disponiveis }}" value="{{ form.quantidade_solicitada or 1 }}" required>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Atividade</label>
+      <textarea name="atividade" rows="3" placeholder="Descreva a atividade a ser realizada">{{ form.atividade or '' }}</textarea>
+    </div>
+    <button type="submit" class="btn btn-primary">Salvar Reserva</button>
+    <a href="{{ url_for('listar_reservas') }}" class="btn">Cancelar</a>
+  </form>
+</div>
+{% endblock %}

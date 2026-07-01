@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Usuários - Reserva Tablets{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Usuários</h1>
+    <div class="subtitle">Gerencie quem tem acesso ao sistema</div>
+  </div>
+  <a href="{{ url_for('novo_usuario') }}" class="btn btn-primary">+ Novo Usuário</a>
+</div>
+
+<div class="panel">
+  <table>
+    <thead>
+      <tr><th>Nome</th><th>Usuário</th><th>Perfil</th><th>Status</th><th>Ações</th></tr>
+    </thead>
+    <tbody>
+      {% for u in usuarios %}
+      <tr>
+        <td>{{ u.nome }}</td>
+        <td>{{ u.username }}</td>
+        <td><span class="badge badge-role-{{ u.role }}">{{ u.label_role }}</span></td>
+        <td>{% if u.ativo %}<span class="badge badge-devolvido">Ativo</span>{% else %}<span class="badge badge-cancelado">Inativo</span>{% endif %}</td>
+        <td>
+          {% if u.id != current_user.id %}
+          <a href="{{ url_for('editar_usuario', user_id=u.id) }}" class="btn btn-sm">Editar</a>
+          <form class="inline" method="POST" action="{{ url_for('alternar_usuario', user_id=u.id) }}">
+            <button class="btn btn-sm" type="submit">{{ 'Desativar' if u.ativo else 'Ativar' }}</button>
+          </form>
+          {% if current_user.role == 'chefe_geral' %}
+          <form class="inline" method="POST" action="{{ url_for('excluir_usuario', user_id=u.id) }}" onsubmit="return confirm('Excluir este usuário permanentemente?')">
+            <button class="btn btn-sm btn-danger" type="submit">Excluir</button>
+          </form>
+          {% endif %}
+          {% else %}
+          <a href="{{ url_for('editar_usuario', user_id=u.id) }}" class="btn btn-sm">Editar</a>
+          <span style="color:var(--text-muted);font-size:0.8rem;margin-left:6px;">você</span>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Painel - Reserva Tablets{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Painel Geral</h1>
+    <div class="subtitle">Visão geral do estoque e reservas de hoje</div>
+  </div>
+  <a href="{{ url_for('nova_reserva') }}" class="btn btn-primary">+ Nova Reserva</a>
+</div>
+
+<div class="cards">
+  <div class="card accent">
+    <div class="label">Total de Tablets</div>
+    <div class="value">{{ estoque.total_tablets }}</div>
+  </div>
+  <div class="card success">
+    <div class="label">Disponíveis</div>
+    <div class="value">{{ disponiveis }}</div>
+  </div>
+  <div class="card warning">
+    <div class="label">Em uso</div>
+    <div class="value">{{ em_uso }}</div>
+  </div>
+  <div class="card">
+    <div class="label">Reservas pendentes</div>
+    <div class="value">{{ pendentes }}</div>
+  </div>
+  <div class="card">
+    <div class="label">Usuários cadastrados</div>
+    <div class="value">{{ total_usuarios }}</div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Reservas de hoje</h2>
+  {% if reservas_hoje %}
+  <table>
+    <thead>
+      <tr>
+        <th>Solicitante</th><th>Turma</th><th>Retirada</th><th>Devolução</th><th>Atividade</th><th>Qtd</th><th>Status</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in reservas_hoje %}
+      <tr>
+        <td>{{ r.nome }}</td>
+        <td>{{ r.turma or '-' }}</td>
+        <td>{{ r.horario_retirada or '-' }}</td>
+        <td>{{ r.horario_devolucao or '-' }}</td>
+        <td>{{ r.atividade or '-' }}</td>
+        <td>{{ r.quantidade_solicitada }}</td>
+        <td><span class="badge badge-{{ r.status }}">{{ r.label_status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">Nenhuma reserva para hoje.</div>
+  {% endif %}
+</div>
+{% endblock %}

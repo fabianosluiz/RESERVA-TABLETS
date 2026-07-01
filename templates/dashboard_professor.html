@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}Painel - Reserva Tablets{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Olá, {{ current_user.nome }}</h1>
+    <div class="subtitle">Reserve tablets para suas aulas e atividades</div>
+  </div>
+  <a href="{{ url_for('nova_reserva') }}" class="btn btn-primary">+ Nova Reserva</a>
+</div>
+
+<div class="cards">
+  <div class="card accent">
+    <div class="label">Total de Tablets</div>
+    <div class="value">{{ estoque.total_tablets }}</div>
+  </div>
+  <div class="card success">
+    <div class="label">Disponíveis agora</div>
+    <div class="value">{{ disponiveis }}</div>
+  </div>
+  <div class="card warning">
+    <div class="label">Em uso</div>
+    <div class="value">{{ em_uso }}</div>
+  </div>
+</div>
+
+<div class="panel">
+  <h2>Minhas últimas reservas</h2>
+  {% if minhas_reservas %}
+  <table>
+    <thead>
+      <tr><th>Data</th><th>Turma</th><th>Atividade</th><th>Qtd</th><th>Status</th></tr>
+    </thead>
+    <tbody>
+      {% for r in minhas_reservas %}
+      <tr>
+        <td>{{ r.data.strftime('%d/%m/%Y') }}</td>
+        <td>{{ r.turma or '-' }}</td>
+        <td>{{ r.atividade or '-' }}</td>
+        <td>{{ r.quantidade_solicitada }}</td>
+        <td><span class="badge badge-{{ r.status }}">{{ r.label_status }}</span></td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">Você ainda não fez nenhuma reserva. <a href="{{ url_for('nova_reserva') }}">Reservar agora</a></div>
+  {% endif %}
+</div>
+{% endblock %}

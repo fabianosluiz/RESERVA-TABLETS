@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Reserva Tablets{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {% if current_user.is_authenticated %}
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="brand">RESERVA TABLETS<small>Gestão de equipamentos</small></div>
+      <nav>
+        <a href="{{ url_for('dashboard') }}" class="{% if request.endpoint == 'dashboard' %}active{% endif %}">Painel</a>
+        <a href="{{ url_for('listar_reservas') }}" class="{% if request.endpoint == 'listar_reservas' %}active{% endif %}">Reservas</a>
+        <a href="{{ url_for('nova_reserva') }}" class="{% if request.endpoint == 'nova_reserva' %}active{% endif %}">Nova Reserva</a>
+        {% if current_user.role in ['chefe_geral', 'admin'] %}
+        <a href="{{ url_for('estoque_view') }}" class="{% if request.endpoint == 'estoque_view' %}active{% endif %}">Estoque</a>
+        <a href="{{ url_for('listar_usuarios') }}" class="{% if request.endpoint in ['listar_usuarios','novo_usuario'] %}active{% endif %}">Usuários</a>
+        {% endif %}
+      </nav>
+      <div class="user-box">
+        <div>{{ current_user.nome }}</div>
+        <span class="role-badge">{{ current_user.label_role }}</span>
+        <div style="margin-top:12px;">
+          <a href="{{ url_for('logout') }}">Sair</a>
+        </div>
+      </div>
+      <div class="sidebar-footer">Site elaborado por<br><strong>Fabiano da Silva Luiz</strong></div>
+    </aside>
+    <main class="main">
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="flash flash-{{ category }}">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+  {% else %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div style="max-width:400px;margin:16px auto 0;">
+        {% for category, message in messages %}
+          <div class="flash flash-{{ category }}">{{ message }}</div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content_guest %}{% endblock %}
+  {% endif %}
+</body>
+</html>

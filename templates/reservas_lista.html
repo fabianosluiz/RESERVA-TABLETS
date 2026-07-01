@@ -1,0 +1,93 @@
+{% extends "base.html" %}
+{% block title %}Reservas - Reserva Tablets{% endblock %}
+{% block content %}
+<div class="topbar">
+  <div>
+    <h1>Reservas</h1>
+    <div class="subtitle">{% if current_user.role == 'professor' %}Suas solicitações de tablets{% else %}Todas as solicitações do sistema{% endif %}</div>
+  </div>
+  <a href="{{ url_for('nova_reserva') }}" class="btn btn-primary">+ Nova Reserva</a>
+</div>
+
+<div class="search-panel">
+  <form method="GET" action="{{ url_for('listar_reservas') }}" class="search-form">
+    <div class="search-fields">
+      <div class="search-field">
+        <label>Solicitante</label>
+        <input type="text" name="busca_nome" value="{{ busca_nome }}" placeholder="Buscar por nome…">
+      </div>
+      <div class="search-field">
+        <label>Turma</label>
+        <input type="text" name="busca_turma" value="{{ busca_turma }}" placeholder="Ex: WU80…">
+      </div>
+      <div class="search-field">
+        <label>Data</label>
+        <input type="date" name="busca_data" value="{{ busca_data }}">
+      </div>
+      <div class="search-field">
+        <label>Status</label>
+        <select name="status">
+          <option value="" {% if not status_filtro %}selected{% endif %}>Todos</option>
+          <option value="pendente"  {% if status_filtro=='pendente'  %}selected{% endif %}>Pendente</option>
+          <option value="retirado"  {% if status_filtro=='retirado'  %}selected{% endif %}>Retirado</option>
+          <option value="devolvido" {% if status_filtro=='devolvido' %}selected{% endif %}>Devolvido</option>
+          <option value="cancelado" {% if status_filtro=='cancelado' %}selected{% endif %}>Cancelado</option>
+        </select>
+      </div>
+    </div>
+    <div class="search-actions">
+      <button type="submit" class="btn btn-primary">Buscar</button>
+      <a href="{{ url_for('listar_reservas') }}" class="btn">Limpar</a>
+    </div>
+  </form>
+</div>
+
+<div class="panel">
+  {% if reservas %}
+  <table>
+    <thead>
+      <tr>
+        <th>Solicitante</th><th>Turma</th><th>Data</th><th>Retirada</th><th>Devolução</th>
+        <th>Atividade</th><th>Qtd</th><th>Status</th><th>Ações</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in reservas %}
+      <tr>
+        <td>{{ r.nome }}</td>
+        <td>{{ r.turma or '-' }}</td>
+        <td>{{ r.data.strftime('%d/%m/%Y') }}</td>
+        <td>{{ r.horario_retirada or '-' }}</td>
+        <td>{{ r.horario_devolucao or '-' }}</td>
+        <td>{{ r.atividade or '-' }}</td>
+        <td>{{ r.quantidade_solicitada }}</td>
+        <td><span class="badge badge-{{ r.status }}">{{ r.label_status }}</span></td>
+        <td>
+          {% if r.status == 'pendente' %}
+          <form class="inline" method="POST" action="{{ url_for('retirar_tablets', reserva_id=r.id) }}">
+            <button class="btn btn-sm" type="submit">Confirmar retirada</button>
+          </form>
+          <form class="inline" method="POST" action="{{ url_for('cancelar_reserva', reserva_id=r.id) }}" onsubmit="return confirm('Cancelar esta reserva?')">
+            <button class="btn btn-sm btn-danger" type="submit">Cancelar</button>
+          </form>
+          {% elif r.status == 'retirado' %}
+          <form class="inline" method="POST" action="{{ url_for('devolver_tablets', reserva_id=r.id) }}">
+            <input type="number" name="quantidade_devolvida" value="{{ r.quantidade_solicitada }}" min="0" max="{{ r.quantidade_solicitada }}" style="width:60px;padding:4px;border-radius:6px;border:1px solid var(--border);background:#0c0e12;color:var(--text);">
+            <button class="btn btn-sm" type="submit">Confirmar devolução</button>
+          </form>
+          {% endif %}
+          {% if current_user.role in ['chefe_geral', 'admin'] %}
+          <form class="inline" method="POST" action="{{ url_for('excluir_reserva', reserva_id=r.id) }}" onsubmit="return confirm('Excluir esta reserva permanentemente?')">
+            <button class="btn btn-sm btn-danger" type="submit">Excluir</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <div class="empty-state">Nenhuma reserva encontrada.</div>
+  {% endif %}
+</div>
+{% endblock %}
